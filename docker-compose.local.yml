@@ -1,0 +1,126 @@
+# CowAgent-Worker Docker Compose - Local Development
+# Services: OmniRoute (port 3000), 9Router (port 8081), OpenHands (port 3001), CowAgent (port 8080)
+
+services:
+  # ============================================================
+  # OmniRoute - API Gateway / Load Balancer
+  # ============================================================
+  omniroute:
+    image: node:20-slim
+    ports:
+      - "3000:3000"
+    working_dir: /app
+    volumes:
+      - ./omniroute:/app
+      - omniroute_data:/app
+    environment:
+      NODE_ENV: development
+      PORT: "3000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    networks:
+      - cowagent-net
+
+  # ============================================================
+  # 9Router - Fallback Router / Load Balancer
+  # ============================================================
+  9router:
+    image: node:20-slim
+    ports:
+      - "8081:8081"
+    working_dir: /app
+    volumes:
+      - ./9router:/app
+      - 9router_data:/app
+    environment:
+      NODE_ENV: development
+      PORT: "8081"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    networks:
+      - cowagent-net
+
+  # ============================================================
+  # OpenHands - AI Agent Runtime (uses official image)
+  # ============================================================
+  openhands:
+    image: docker.all-hands.dev/all-hands/openhands:main
+    ports:
+      - "3001:3000"
+    working_dir: /workspace
+    volumes:
+      - openhands_data:/workspace
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      PYTHONUNBUFFERED: "1"
+      WORKSPACE_BASE: "/workspace"
+      SANDBOX_RUNTIME_CONTAINER_IMAGE: "docker.all-hands.dev/all-hands/openhands:main"
+      LLM_API_KEY: "not-needed"
+      LLM_MODEL: "auto"
+      LLM_BASE_URL: "http://omniroute:3000/v1"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    depends_on:
+      omniroute:
+        condition: service_healthy
+    networks:
+      - cowagent-net
+
+  # ============================================================
+  # CowAgent - CEO / Orchestrator
+  # ============================================================
+  cowagent:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: cowagent
+    ports:
+      - "8080:8080"
+    working_dir: /app
+    volumes:
+      - ./app.py:/app/app.py
+      - ./plugins:/app/plugins
+      - cowagent_data:/app
+    environment:
+      PYTHONUNBUFFERED: "1"
+      PORT: "8080"
+      HOSTNAME: "0.0.0.0"
+      OMNIROUTE_URL: "http://omniroute:3000"
+      NINEROUTER_URL: "http://9router:8081"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    depends_on:
+      omniroute:
+        condition: service_healthy
+      9router:
+        condition: service_healthy
+      openhands:
+        condition: service_healthy
+    networks:
+      - cowagent-net
+
+volumes:
+  omniroute_data:
+  9router_data:
+  openhands_data:
+  cowagent_data:
+
+networks:
+  cowagent-net:
+    driver: bridge

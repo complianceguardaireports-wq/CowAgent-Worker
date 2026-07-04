@@ -1,0 +1,96 @@
+# Autonomous AI Company - Git Ignore
+
+# Dependencies
+node_modules/
+**/node_modules/
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+.Python
+venv/
+env/
+*.egg-info/
+
+# Build outputs
+.build/
+dist/
+*.egg/
+*.whl/
+
+# Docker
+.docker/
+docker-compose.override.yml
+
+# Local development
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+*.log.*
+
+# Runtime data
+data/
+**/data/
+*.db
+*.sqlite
+*.sqlite3
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# OS
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Test coverage
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+
+# Type checking
+.mypy_cache/
+.typecheck/
+
+# Build artifacts
+*.tgz
+*.tar.gz
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Secrets (never commit!)
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+*.jks
+*.keystore
+secrets.yaml
+secrets.yml
+
+# Large files
+*.bin
+*.dat
+*.iso
+*.img
+
+# Plugin submodules (managed separately)
+plugins/omniroute/.git
+plugins/9router/.git
+plugins/omniroute/node_modules
+plugins/9router/node_modules

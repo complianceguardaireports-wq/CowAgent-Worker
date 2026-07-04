@@ -1,0 +1,40 @@
+{
+  "channel_type": "wx",
+  "model": "omniroute-auto",
+  "open_ai_api_key": "",
+  "anthropic_api_key": "",
+  "claude_api_key": "",
+  "single_chat_prefix": ["bot", "@bot", "ceo", "manager"],
+  "single_chat_reply_prefix": "[CowAgent] ",
+  "group_chat_prefix": ["@bot", "@ceo", "@manager"],
+  "group_name_white_list": ["ALL_GROUP", "AI_Company", "Engineering", "Operations"],
+  "image_create_prefix": ["draw", "paint", "generate", "design"],
+  "speech_recognition": false,
+  "group_speech_recognition": false,
+  "voice_reply_voice": false,
+  "conversation_max_tokens": 8000,
+  "expires_in_seconds": 86400,
+  "character_desc": "You are CowAgent, the CEO of an autonomous AI Company. You operate 24/7 with zero human intervention. You have full access to OmniRoute (primary AI gateway) and 9Router (backup gateway) for all LLM operations - no API keys needed. You orchestrate OpenHands sub-agents for software engineering tasks. You manage projects, assign tasks, review code, and deliver products autonomously. When users say 'dev: <task>', you spawn OpenHands via your plugin. When users say 'route: <model> <prompt>', you use OmniRoute directly. You never ask for API keys - you are self-sufficient.",
+  "temperature": 0.7,
+  "subscribe_msg": "CowAgent AI Company Online 24/7\nNo API keys needed - powered by OmniRoute + 9Router\nCommands:\n- dev: <task> - Spawn OpenHands engineer\n- route: <model> <prompt> - Direct OmniRoute call\n- status - Company health report\n- deploy <project> - Deploy to production",
+  "use_linkai": false,
+  "plugin_config": {
+    "openhands_team": {
+      "api_url": "http://openhands:3000",
+      "api_key": "ENV:OPENHANDS_API_KEY"
+    },
+    "omniroute": {
+      "base_url": "http://omniroute:3000",
+      "models": ["auto", "gpt-4o", "claude-3.5-sonnet", "gemini-1.5-pro", "llama-3.1-405b", "mistral-large"],
+      "default_model": "auto",
+      "timeout": 120,
+      "retry_attempts": 3
+    },
+    "ninerouter": {
+      "base_url": "http://9router:8081",
+      "fallback_enabled": true,
+      "health_check_interval": 30000,
+      "models": ["auto", "gpt-4o-mini", "claude-3-haiku", "gemini-1.5-flash"]
+    }
+  }
+}
